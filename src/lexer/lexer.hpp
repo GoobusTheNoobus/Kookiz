@@ -3,21 +3,39 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <sstream>
 
 namespace Kookiz {
 
 enum class TokenType: int8_t {
     // Literals
     Identifier,
-    NumberLiteral,
+    IntegerLiteral,
+    FloatLiteral,
     StringLiteral,
 
-    Keyword,
-    Operator,
+    KwdReturn,
+    KwdFn,
+    KwdVar,
+    KwdTrue,
+    KwdFalse,
+    KwdNull,
 
-    BracketRound,
-    BracketSquare,
-    BracketBrace,
+    OperAdd,
+    OperMinus,
+    OperStar,
+    OperSlash,
+    OperEqual,
+    OperSemicolon,
+    OperDot,
+    OperColon,
+
+    OBracketRound,
+    CBracketRound,
+    OBracketSquare,
+    CBracketSquare,
+    OBracketBrace,
+    CBracketBrace,
 
     // Special
     EndOfFile,
@@ -29,13 +47,31 @@ enum class TokenType: int8_t {
 inline const char* to_string(TokenType type) {
     switch (type) {
         case TokenType::Identifier: return "Identifier";
-        case TokenType::NumberLiteral: return "NumberLiteral";
+        case TokenType::IntegerLiteral: return "IntegerLiteral";
+        case TokenType::FloatLiteral: return "FloatLiteral";
         case TokenType::StringLiteral: return "StringLiteral";
-        case TokenType::Keyword: return "Keyword";
-        case TokenType::Operator: return "Operator";
-        case TokenType::BracketRound: return "BracketRound";
-        case TokenType::BracketSquare: return "BracketSquare";
-        case TokenType::BracketBrace: return "BracketBrace";
+
+        case TokenType::KwdReturn: return "KwdReturn";
+        case TokenType::KwdFn: return "KwdFn";
+        case TokenType::KwdVar: return "KwdVar";
+        case TokenType::KwdTrue: return "KwdTrue";
+        case TokenType::KwdFalse: return "KwdFalse";
+        case TokenType::KwdNull: return "KwdNull";
+
+        case TokenType::OperAdd: return "OperAdd";
+        case TokenType::OperMinus: return "OperMinus";
+        case TokenType::OperStar: return "OperStar";
+        case TokenType::OperSlash: return "OperSlash";
+        case TokenType::OperEqual: return "OperEqual";
+        case TokenType::OperSemicolon: return "OperSemicolon";
+        case TokenType::OperColon: return "OperColon";
+        case TokenType::OperDot: return "OperDot";
+        case TokenType::OBracketRound: return "OBracketRound";
+        case TokenType::OBracketSquare: return "OBracketSquare";
+        case TokenType::OBracketBrace: return "OBracketBrace";
+        case TokenType::CBracketRound: return "CBracketRound";
+        case TokenType::CBracketSquare: return "CBracketSquare";
+        case TokenType::CBracketBrace: return "CBracketBrace";
         case TokenType::EndOfFile: return "EOF";
         case TokenType::Error: return "Error";
         case TokenType::None: return "None";
@@ -50,9 +86,21 @@ struct Token {
     std::string repr() const {
         return "{ Literal: \"" + string + "\", Type: \"" + to_string(token_type) + "\" }";
     }
+
+    static Token end_of_file() {
+        return {"", TokenType::EndOfFile};
+    }
 };
 
 using Tokens = std::vector<Token>;
+
+inline std::ostream& operator<<(std::ostream& os, const Tokens& tokens) {
+    for (const Token& t: tokens) {
+        os << t.repr() << "\n";
+    }
+
+    return os;
+}
 
 class Lexer {
 
@@ -61,15 +109,23 @@ class Lexer {
 
     private:
     std::string src;
-    size_t at;
+    size_t at = 0;
+    int line = 1;
 
     inline bool end() { return at >= src.length(); }
     inline char peek() { return src[at]; }
-    inline void skip_spaces() {
-        do {
-            ++at;
-        } while (src[at] == ' ');
+    inline char peek(size_t off = 0) const {
+        return (at + off < src.size()) ? src[at + off] : '\0';
     }
+    inline void skip_spaces() {
+        while (at < src.length() && (src[at] == ' ' || src[at] == '\t')) ++at;
+    }
+    inline void next() { ++at; }
+
+    Token make_identifier_or_keyword();
+    Token make_number();
+    Token make_string();
+    Token make_operator();
 
 };
 }

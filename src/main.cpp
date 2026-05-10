@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "lexer/lexer.hpp"
+using namespace Kookiz;
 
-/*
 int main(int argc, char** argv) {
     
     // Command line shell
@@ -28,19 +29,41 @@ int main(int argc, char** argv) {
             filename.append(".kkz");
         }
 
-        std::cout << "Running " << filename << std::endl;
+        std::ifstream file(filename);
+
+        if (!file.is_open()) {
+            std::cout << "[31mFailed to open file " << filename << "[0m]";
+            return 1; 
+        }
+
+        Lexer lexer;
+
+        std::string code = std::string(
+            std::istreambuf_iterator<char>(file),
+            std::istreambuf_iterator<char>()
+        );
+
+        std::cout << "Contents of " << filename << std::endl;
+        std::cout << "======================================\n";
+        std::cout << code << std::endl << std::endl;
+ 
+        Tokens tokens = lexer.tokenize(code);
+
+        std::cout << "Tokens: \n";
+        std::cout << tokens;
     }
 
 }
 
+
+
+/*
+int main() {
+    std::string code = "print(\"Hello World\")345 654.432 @#";
+
+    Lexer lexer;
+
+    std::cout << lexer.tokenize(code);
+}
 */
 
-using namespace Kookiz;
-
-int main() {
-    Token token;
-    token.string = "3";
-    token.token_type = TokenType::NumberLiteral;
-
-    std::cout << token.repr() << std::endl;
-}

@@ -1,0 +1,11 @@
+Console.WriteOut("Hello World\n");
+Console.WriteErr("Oh no!\n");
+
+var i: Int64 = 0;
+var message: String = "Six Seven!!!!";
+
+Console.WriteOut(message + String(i));
+
+fn body_count(): UInt64 {
+    ret 2000;
+}
