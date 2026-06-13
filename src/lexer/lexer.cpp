@@ -30,7 +30,6 @@ Tokens Lexer::tokenize(const std::string& code) {
             tokens.push_back(make_identifier_or_keyword());
         }
             
-
         else if (std::isdigit(c)) 
             tokens.push_back(make_number());
         
@@ -55,7 +54,7 @@ Token Lexer::make_identifier_or_keyword() {
     // - Letters
     // - Underscores
 
-    Token token{"", TokenType::Identifier};
+    Token token{"", TokenType::Identifier, line};
 
     while (!end()) {
         char c = peek();
@@ -81,7 +80,7 @@ Token Lexer::make_identifier_or_keyword() {
 }
 
 Token Lexer::make_number() {
-    Token token{"", TokenType::IntegerLiteral};
+    Token token{"", TokenType::IntegerLiteral, line};
 
     while (!end()) {
         char c = peek();
@@ -104,7 +103,7 @@ Token Lexer::make_number() {
 }
 
 Token Lexer::make_string() {
-    Token token{"", TokenType::StringLiteral};
+    Token token{"", TokenType::StringLiteral, line};
 
     // Skip first quote
     next();
@@ -134,7 +133,7 @@ Token Lexer::make_operator() {
 
     char c = peek();
 
-    Token token{std::string(1, c), TokenType::None};
+    Token token{std::string(1, c), TokenType::None, line};
 
     if (c == '(') token.token_type = TokenType::OBracketRound;
     else if (c == ')') token.token_type = TokenType::CBracketRound;
@@ -149,6 +148,7 @@ Token Lexer::make_operator() {
     else if (c == '=') token.token_type = TokenType::OperEqual;
     else if (c == ';') token.token_type = TokenType::OperSemicolon;
     else if (c == '.') token.token_type = TokenType::OperDot;
+    else if (c == ',') token.token_type = TokenType::OperComma;
     else if (c == ':') token.token_type = TokenType::OperColon;
     else {
         std::string m = "Unknown symbol: ";

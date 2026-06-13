@@ -29,6 +29,7 @@ enum class TokenType: int8_t {
     OperSemicolon,
     OperDot,
     OperColon,
+    OperComma,
 
     OBracketRound,
     CBracketRound,
@@ -66,6 +67,7 @@ inline const char* to_string(TokenType type) {
         case TokenType::OperSemicolon: return "OperSemicolon";
         case TokenType::OperColon: return "OperColon";
         case TokenType::OperDot: return "OperDot";
+        case TokenType::OperComma: return "OperComma";
         case TokenType::OBracketRound: return "OBracketRound";
         case TokenType::OBracketSquare: return "OBracketSquare";
         case TokenType::OBracketBrace: return "OBracketBrace";
@@ -82,9 +84,13 @@ inline const char* to_string(TokenType type) {
 struct Token {
     std::string string;
     TokenType token_type = TokenType::None;
-    
+    int line = 1;
+
+    Token() = default;
+    Token(const std::string& s, TokenType t, int l): string(s), token_type(t), line(l) {}
+
     std::string repr() const {
-        return "{ Literal: \"" + string + "\", Type: \"" + to_string(token_type) + "\" }";
+        return "{ Line: " + std::to_string(line) + ", Literal: \"" + string + "\", Type: \"" + to_string(token_type) + "\" }";
     }
 
     static Token end_of_file() {
